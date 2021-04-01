@@ -1,0 +1,7 @@
+version: "3.2"
+services:
+  app:
+    image: sample-black-app:local
+    environment:
+      AUDIENCE: Rancher
+    command: ["noop"]
