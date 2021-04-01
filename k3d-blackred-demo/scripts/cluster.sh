@@ -6,6 +6,10 @@ CURR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )";
 # shellcheck source=./common.sh
 source "$CURR_DIR/common.sh";
 
+section "Create registry"
+info_exec "Create k3d cluster" "k3d registry create blackred-registry --port 0.0.0.0:5111"
+
+
 section "Create blackred-demo cluster"
 # info "Cluster Name: blackred-demo"
 # info "--api-port 6550: expose the Kubernetes API on localhost:6550 (via loadbalancer)"
@@ -14,7 +18,7 @@ section "Create blackred-demo cluster"
 # info "--port 8080:80@loadbalancer: map localhost:8080 to port 80 on the loadbalancer (used for ingress)"
 # info "--volume /tmp/src:/src@all: mount the local directory /tmp/src to /src in all nodes (used for code)"
 # info "--wait: wait for all server nodes to be up before returning"
-info_exec "Create k3d cluster" "k3d cluster create blackred-demo --api-port 0.0.0.0:6550 --kubeconfig-update-default --kubeconfig-switch-context --port 8080:80@loadbalancer --servers 1 --agents 3 --wait"
+info_exec "Create k3d cluster" "k3d cluster create blackred-demo --api-port 0.0.0.0:6550 --kubeconfig-update-default --kubeconfig-switch-context --port 8081:80@loadbalancer --registry-use k3d-blackred-registry:5111 --servers 1 --agents 3 --wait"
 
 info_exec "List clusters" "k3d cluster list"
 info_exec "List clusters" "k3d node list"

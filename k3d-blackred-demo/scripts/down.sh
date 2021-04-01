@@ -11,4 +11,6 @@ section "say good bye to demo cluster"
 info_exec "Stop the cluster" "k3d cluster stop -a"
 info_exec "Delete the Cluster" "k3d cluster delete -a"
 
+info_exec "Delete the registry" "k3d registry delete blackred-registry"
+
 info_exec "delete all others " "/usr/local/bin/k3s-killall.sh" 
