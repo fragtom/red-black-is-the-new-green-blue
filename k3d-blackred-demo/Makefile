@@ -9,5 +9,8 @@ clean:
 deploy:
 	scripts/deploy.sh
 
+lb:
+	scripts/traefik.sh
+
 prep:
 	scripts/prep.sh
