@@ -14,7 +14,7 @@ printf "${CYA}********************${END}\n$(cat $configfile | grep -v '^\s*#')\n
 
 section "Create blackred-demo cluster"
 
-info_exec "Create k3d cluster: blackred-demo" "k3d cluster create --config $configfile"
+info_exec "Create k3d cluster: blackred-demo" "k3d cluster create --registry-use k3d-blackred-registry:5111 --config $configfile"
 # info_exec "Create k3d cluster" "k3d cluster create blackred-demo --api-port 0.0.0.0:6550 --kubeconfig-update-default --kubeconfig-switch-context --no-lb --k3s-server-arg --disable=servicelb --k3s-server-arg --disable=traefik --registry-use k3d-blackred-registry:5111 -l --servers 1 --agents 3 --wait"
 # info_exec "Create k3d cluster" "k3d cluster create blackred-demo --api-port 0.0.0.0:6550 --kubeconfig-update-default --kubeconfig-switch-context --port 80:80@loadbalancer --registry-use k3d-blackred-registry:5111 --servers 1 --agents 3 --wait"
 

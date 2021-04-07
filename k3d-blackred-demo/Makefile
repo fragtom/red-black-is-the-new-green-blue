@@ -7,6 +7,7 @@ clean:
 	scripts/down.sh
 
 deploy:
+	scripts/traefik.sh
 	scripts/deploy.sh
 
 lb:

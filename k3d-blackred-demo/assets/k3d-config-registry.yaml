@@ -13,4 +13,4 @@ registries:
     mirrors:
       k3d-blackred-registry:
         endpoint:
-          - http://k3d-blackred-registry:5000
+          - http://k3d-blackred-registry:5111

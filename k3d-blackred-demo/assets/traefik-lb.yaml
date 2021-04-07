@@ -161,7 +161,6 @@ spec:
         - containerPort: 80
           name: web
           protocol: TCP
-
 ---
 apiVersion: v1
 kind: Service
