@@ -1,0 +1,72 @@
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-dashboard
+  namespace: traefik
+spec:
+  ports:
+    - protocol: TCP
+      name: admin
+      port: 8080
+  selector:
+    app: traefik
+
+# --- 
+# # use this for kubernetes ingress
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: traefik-dashboard-ingress
+#   namespace: traefik
+#   annotations:
+#     kubernetes.io/ingress.class: traefik
+#     traefik.ingress.kubernetes.io/router.entrypoints: web, websecure
+#     traefik.ingress.kubernetes.io/router.tls: "true"
+#     traefik.ingress.kubernetes.io/router.middlewares: traefik-auth@kubernetescrd
+#     # cert-manager.io/cluster-issuer: letsencrypt-prod
+
+# spec:
+#   rules:
+#     - host: redblack-traefik.fragtom.de
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: traefik-service
+#                 port:
+#                   number: 8080
+
+---
+# use this for traefik crd - ingressroute
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroute
+  namespace: traefik
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`redblack-traefik.fragtom.de`) 
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+          port: 8080
+      middlewares:
+        - name: traefik-auth
+    # - match: Host(`redblack.fragtom.de`) 
+    #   kind: Rule
+    #   # priority: 12
+    #   # defining several services is possible and allowed, but for now the servers of
+    #   # all the services (for a given route) get merged altogether under the same
+    #   # load-balancing strategy.
+    #   services:
+    #     - name: api@internal
+    #       port: 80

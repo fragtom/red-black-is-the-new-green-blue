@@ -1,0 +1,193 @@
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traefik-ingress-controller
+  namespace: traefik
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: traefik
+    release: traefik
+  name: traefik
+  namespace: traefik
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      name: web
+      targetPort: 80
+    - protocol: TCP
+      port: 443
+      name: websecure
+      targetPort: 80
+    - protocol: TCP
+      port: 8080
+      name: admin
+      targetPort: 8080
+  selector:
+    app: traefik
+  type: LoadBalancer
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: traefik
+  name: traefik
+  labels:
+    app: traefik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      containers:
+        - name: traefik
+          image: traefik:v2.4.8
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ping
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
+          args:
+            - --accesslog=true
+            - --log.level=INFO
+            - --api.insecure=true
+            - --api.dashboard=true
+            
+            - --entryPoints.traefik.address=:8080
+            - --entrypoints.web.Address=:80
+            - --entrypoints.websecure.Address=:443
+    
+            - --providers.kubernetescrd
+
+            # - --providers.kubernetescrd=false # we use native k8s ingress instead of the crd
+            # - --providers.kubernetesingress
+            # - --providers.kubernetesingress.ingressclass=traefik
+        
+            - --ping=true
+            - --ping.entryPoint=web
+    
+            # - --providers.kubernetesingress=true
+            # # - --ping=true
+            # - --certificatesresolvers.default.acme.tlschallenge
+            # - --certificatesresolvers.default.acme.email=foo@you.com
+            # - --certificatesresolvers.default.acme.storage=acme.json
+            # Please note that this is the staging Let's Encrypt server.
+            # Once you get things working, you should remove that whole line altogether.
+            # - --certificatesresolvers.default.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+          ports:
+            - name: web
+              containerPort: 80
+              protocol: TCP
+            - name: websecure
+              containerPort: 8443
+              protocol: TCP
+            - name: admin
+              containerPort: 8080
+              protocol: TCP
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: traefik-auth
+  namespace: traefik
+spec:
+  basicAuth:
+    secret: admin-authsecret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: admin-authsecret
+  namespace: traefik
+data:
+  users: |
+    dHJhZWZpazokYXByMSRrUUxES0swRSRuMVROdTFHYnJCbXA3RVVGOGh4UDgw
+
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: cheese
+#   namespace: traefik
+# spec:
+#   defaultBackend:
+#     service:
+#       name: stilton
+#       port:
+#         number: 80
+
+--- 
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: traefik
+  name: whoami
+  labels:
+    app: whoami
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoami
+  template:
+    metadata:
+      labels:
+        app: whoami
+    spec:
+      containers:
+        - name: whoami
+          image: containous/whoami
+          ports:
+            - name: web
+              containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: whoami
+  namespace: traefik
+spec:
+  ports:
+    - protocol: TCP
+      name: web
+      port: 80
+  selector:
+    app: whoami
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: whoami-whoami
+  namespace: traefik
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+  - match: PathPrefix(`/whoami`)
+    kind: Rule
+    services:
+    - name: whoami
+      port: 80

@@ -8,9 +8,13 @@
 - `kubens` - easy installation with e.g. helm
 
 
-## traefik deployment 
+## traefik loadbalancer 
 
-I decided to go for traefik loadbalancer in front of the demo app adds option to take advantage visualizing traffic from web to this demo-cluster. because unfortunately there are no helmet charts for the current 2.x version yet (see result in ```helm search repo traefik```), I took the installation by current kubernetes api extension. ```apiextensions.k8s.io/v1``` (see traefik - kubernetes installation)[https://doc.traefik.io/traefik/master/reference/dynamic-configuration/kubernetes-crd/]
+I decided to go for traefik loadbalancer in front of the demo app adds option to take advantage visualizing traffic from web to this demo-cluster. because unfortunately there are no helmet charts for the current 2.x version yet (see result in ```helm search repo traefik```), I took the installation by current kubernetes api extension ```apiextensions.k8s.io/v1```.  
+
+See [traefik - kubernetes installation](https://doc.traefik.io/traefik/master/reference/dynamic-configuration/kubernetes-crd/)
+
+As basic auth credentials for user _traefik_ use the author's name. Otherwise replace middleware secret.
 
 ## Spinnaker deployment 
 

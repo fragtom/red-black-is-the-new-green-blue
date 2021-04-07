@@ -16,11 +16,11 @@ if ! type helm > /dev/null; then
     # Add default repos
     helm repo add stable https://charts.helm.sh/stable
     # Add kubernetes-dashboard repository
-    helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
-    # Add bitnami helm repos
-    helm repo add bitnami https://charts.bitnami.com/bitnami
-    # Add Prometheus helm repos
-    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    # helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+    # # Add bitnami helm repos
+    # helm repo add bitnami https://charts.bitnami.com/bitnami
+    # # Add Prometheus helm repos
+    # helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
     # Update helm
     helm repo update
     exit

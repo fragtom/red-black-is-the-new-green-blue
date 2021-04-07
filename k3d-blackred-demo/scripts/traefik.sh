@@ -9,14 +9,10 @@ source "$CURR_DIR/common.sh";
 section "Add traefik2 loadbalancer in front of kubernetes"
 
 info_exec "traefik namespace" "kubectl create namespace traefik"
-info_exec "traefik namespace" "kubectl create namespace demo"
-info_exec "traefik namespace" "kubectl create namespace demo2"
 info_exec "switch" "kubens traefik"
 
-info_exec "Custom Resource Definitions" "kubectl apply -f assets/traefik-crd.yaml"
-info_exec "RBAC" "kubectl apply -f assets/traefik-rbac.yaml"
-info_exec "Services" "kubectl apply -f assets/traefik-svc.yaml"
-info_exec "Ingressroute" "kubectl apply -f assets/traefik-ingressroute.yaml"
-info_exec "Middlewares" "kubectl apply -f assets/traefik-middleware.yaml"
-info_exec "Deployments" "kubectl apply -f assets/traefik-deployment.yaml"
+info_exec "Create traefik Custom Resource Definitions" "kubectl apply -f assets/traefik-crd.yaml"
+info_exec "Apply role-based accesses with RBAC" "kubectl apply -f assets/traefik-rbac.yaml"
+info_exec "Deploy traefik as loadbalancer" "kubectl apply -f assets/traefik-lb.yaml"
+info_exec "Traefik dashboard" "kubectl apply -f assets/traefik-dashboard.yaml"
 
