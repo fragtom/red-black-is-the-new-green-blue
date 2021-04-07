@@ -23,7 +23,7 @@ spec:
         - containerPort: 80
         volumeMounts:
         - name: html-volume
-          mountPath: /usr/share/nginx/html
+          mountPath: /usr/share/nginx/html/red
       volumes:
       - name: html-volume
         configMap:
@@ -53,7 +53,7 @@ spec:
         - containerPort: 80
         volumeMounts:
         - name: html-volume
-          mountPath: /usr/share/nginx/html
+          mountPath: /usr/share/nginx/html/black
       volumes:
       - name: html-volume
         configMap:

@@ -136,30 +136,31 @@ data:
 #         number: 80
 
 --- 
-kind: Deployment
 apiVersion: apps/v1
+kind: Deployment
 metadata:
   namespace: traefik
   name: whoami
   labels:
     app: whoami
-
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: whoami
+      app: "whoami"
   template:
     metadata:
       labels:
         app: whoami
     spec:
       containers:
-        - name: whoami
-          image: containous/whoami
-          ports:
-            - name: web
-              containerPort: 80
+      - image: containous/whoami
+        imagePullPolicy: Always
+        name: whoami
+        ports:
+        - containerPort: 80
+          name: web
+          protocol: TCP
 
 ---
 apiVersion: v1

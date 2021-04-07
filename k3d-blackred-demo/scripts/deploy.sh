@@ -19,10 +19,12 @@ source "$CURR_DIR/common.sh";
 section "Static demo sites with nginx"
 
 info_exec "Create a new 'demo-black' namespace" "kubectl create namespace demo-black"
-info_exec "with index-black configmap" "kubectl -n demo-black create configmap black-html --from-file assets/index-black.html"
+# info_exec "with index-black configmap" "kubectl -n demo-black create configmap black-html --from-file assets/index-black.html"
+info_exec "with index-black configmap" "kubectl -n demo-black apply -f assets/index-black.cm.yaml"
 
 info_exec "Create a new 'demo-red' namespace" "kubectl create namespace demo-red"
-info_exec "with index-red configmap" "kubectl -n demo-red create configmap red-html --from-file assets/index-red.html"
+# info_exec "with index-red configmap" "kubectl -n demo-red create configmap red-html --from-file assets/index-red.html"
+info_exec "with index-black configmap" "kubectl -n demo-red apply -f assets/index-red.cm.yaml"
 
 info_exec "Deployments" "kubectl apply -f assets/demo-sites.yaml"
 
