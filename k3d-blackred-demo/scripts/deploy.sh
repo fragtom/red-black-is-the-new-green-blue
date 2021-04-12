@@ -35,6 +35,5 @@ info_pause_exec "Deploy the black app with helm" "helm upgrade --install demo-bl
 # info_exec "docker tag demo-red" "docker tag demo-red:local k3d-blackred-registry:5111/demo-red:local"
 # info_exec "Docker push demo-red" "docker push k3d-blackred-registry:5111/demo-red:local"
 
-# # info_pause_exec "Switch to the new 'blackred-demo' namespace" "kubens blackred-demo"
-# info_pause_exec "Deploy the black sample app with helm" "helm upgrade --install sample-black sample-black/conf/charts/sample-app/ --namespace demo-black --set app.image=k3d-blackred-registry:5111/sample-black-app:local"
+# info_pause_exec "Deploy the black app with helm" "helm upgrade --install demo-red demo-red --namespace demo-red --set app.image=k3d-blackred-registry:5111/demo-red:local"
 

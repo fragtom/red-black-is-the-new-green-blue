@@ -1,25 +1,30 @@
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "black.fullname" . }}
   labels:
     {{- include "black.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "black.name" . }}
+    helm.sh/chart: {{ include "black.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}    
+
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
+      app.kubernetes.io/name: {{ include "black.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
       {{- include "black.selectorLabels" . | nindent 6 }}
+
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
+        app.kubernetes.io/name: {{ include "black.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
         {{- include "black.selectorLabels" . | nindent 8 }}
     spec:
+
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -27,18 +32,21 @@ spec:
       serviceAccountName: {{ include "black.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+      - name: {{ .Chart.Name }}
+        stdin: true
+        tty: true
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -51,3 +59,11 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+        # livenessProbe:
+        #   httpGet:
+        #     path: /{{ .Values.service.healthcheck }}
+        #     port: http
+        # readinessProbe:
+        #   httpGet:
+        #     path: /{{ .Values.service.healthcheck }}
+        #     port: http
